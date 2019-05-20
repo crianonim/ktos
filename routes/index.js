@@ -1,29 +1,13 @@
 var express = require('express');
 var router = express.Router();
-const auth = require('../service');
-router.use(auth.middleware)
-const http = require('http')
+// const auth = require('../service');
+const auth=require("../lib/ktos-client")();
+// router.use(auth.middleware)
+// const http = require('http')
 /* GET home page. */
-router.get('/secret', (req, res, next) => {
-  let r = http.request({
-    hostname: 'localhost',
-    port: 3000,
-    path: "/",
-    method: "GET",
-    headers: auth.createHeader(2),
 
-
-  }, (rsp) => {
-    console.log(rsp.statusCode);
-    rsp.pipe(res)
-  })
-  r.on('error', (e) => {
-    res.send(e)
-  });
-  r.end();
-})
-router.post('/login', (req, res) => {
-  let authResult = auth.authenticate(req.body.username, req.body.password);
+router.post('/login', async (req, res) => {
+  let authResult = await auth.authenticate(req.body.username, req.body.password);
   console.log(authResult);
   if (authResult) {
     res.cookie('token', authResult);
@@ -38,8 +22,10 @@ router.get('/logout', (req, res) => {
   res.clearCookie('token');
   res.redirect('/');
 })
-router.get('/', function (req, res, next) {
-  res.render('index', { title: 'Express', user: res.locals.user });
+router.get('/', async function (req, res, next) {
+  let user=await auth.getUser(req);
+  console.log(user);
+  res.render('index', { title: 'Express', user});
 });
 
 
