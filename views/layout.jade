@@ -4,4 +4,11 @@ html
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
+    div 
+     if user
+      span Logged in as #{user.name}
+      a(href="/logout") logout
+     else 
+      span Not logged in  
+      a(href="/login") login
     block content

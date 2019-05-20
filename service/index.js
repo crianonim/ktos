@@ -3,8 +3,8 @@ const jwt=require('jsonwebtoken');
 
 const SECRET="enigma1"
 const DB=[
-    {id:1,username:"criamon",name:"Jan",password:"1x"},
-    {id:2,username:"lucas",name:"Lucas",password:"BR"}
+    {id:1,username:"criamon",name:"Jan",password:"1x",loggedIn:false},
+    {id:2,username:"lucas",name:"Lucas",password:"BR",loggedIn:false}
 ]
 
 module.exports={
@@ -29,6 +29,9 @@ function getUser(req){
             token=req.headers.authorization.split(" ")[1] // TODO
             console.log("Token from Header")
         }
+        else if (req.cookies.token){
+            token=req.cookies.token;
+        }
         else {
             token=req.query.token;
             console.log("Token from url")
@@ -48,6 +51,7 @@ function authenticate(username,password){
     if (user){
         return jwt.sign({id:user.id},SECRET)
     }
+    return false;
 }
 function createHeader(id){
    return {'Authorization':'Bearer '+jwt.sign({id},SECRET)}
